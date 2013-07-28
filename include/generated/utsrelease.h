@@ -1,1 +1,1 @@
-#define UTS_RELEASE "2.6.38.6-Sayanogenmod"
+#define UTS_RELEASE "2.6.38.6-Sayanogenmod+"

@@ -1,8 +1,8 @@
-/* This file is auto generated, version 10 */
+/* This file is auto generated, version 13 */
 /*  PREEMPT */
 #define UTS_MACHINE "arm"
-#define UTS_VERSION "#10 PREEMPT Sun Jul 28 19:43:57 KST 2013"
-#define LINUX_COMPILE_TIME "19:43:57"
+#define UTS_VERSION "#13 PREEMPT Sun Jul 28 20:46:13 KST 2013"
+#define LINUX_COMPILE_TIME "20:46:13"
 #define LINUX_COMPILE_BY "sunghun"
 #define LINUX_COMPILE_HOST "sunghun-System-Product-Name"
 #define LINUX_COMPILE_DOMAIN "(none)"

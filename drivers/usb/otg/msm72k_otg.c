@@ -318,7 +318,7 @@ static inline void set_squelch_level(struct msm_otg *dev)
 
 	res = ulpi_read(dev, ULPI_CONFIG_REG4);
 	res &= ~ULPI_SQUELCH_LEVEL_MASK;
-	res |= SQUELCH_LEVEL_1;
+	res |= SQUELCH_LEVEL_2;
 	ulpi_write(dev, res, ULPI_CONFIG_REG4);
 }
 #endif
@@ -868,6 +868,22 @@ static void msm_otg_resume_w(struct work_struct *w)
 {
 	struct msm_otg	*dev = container_of(w, struct msm_otg, otg_resume_work);
 	unsigned long timeout;
+#ifdef CONFIG_MACH_TREBON
+	struct msm_otg_platform_data *pdata = dev->pdata;
+	enum chg_type chg_type = atomic_read(&dev->chg_type);
+
+	if (pdata->chg_connect_type) {
+		if (pdata->chg_connect_type() == USB_CHG_TYPE__WALLCHARGER) {
+			pr_info("chg_type is WALLCHARGER\n");
+			atomic_set(&dev->chg_type, USB_CHG_TYPE__WALLCHARGER);
+		} else {
+			pr_info("chg_type is %d\n", chg_type);
+			if (chg_type == USB_CHG_TYPE__WALLCHARGER)
+				atomic_set(&dev->chg_type,
+					USB_CHG_TYPE__INVALID);
+		}
+	}
+#endif
 
 	msm_otg_get_resume(dev);
 

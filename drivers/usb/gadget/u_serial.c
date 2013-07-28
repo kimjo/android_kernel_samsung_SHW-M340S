@@ -386,7 +386,9 @@ __acquires(&port->port_lock)
 		req = list_entry(pool->next, struct usb_request, list);
 		len = gs_send_packet(port, req->buf, TX_BUF_SIZE);
 		if (len == 0) {
-			/* Queue zero length packet */
+			/* Queue zero length packet explicitly to make it
+			 * work with UDCs which don't support req->zero flag
+			 */
 			if (prev_len && (prev_len % in->maxpacket == 0)) {
 				req->length = 0;
 				list_del(&req->list);
@@ -411,7 +413,6 @@ __acquires(&port->port_lock)
 
 		req->length = len;
 		list_del(&req->list);
-		req->zero = (gs_buf_data_avail(&port->port_write_buf) == 0);
 
 		pr_vdebug(PREFIX "%d: tx len=%d, 0x%02x 0x%02x 0x%02x ...\n",
 				port->port_num, len, *((u8 *)req->buf),
@@ -1092,7 +1093,7 @@ static int gs_break_ctl(struct tty_struct *tty, int duration)
 	return status;
 }
 
-static int gs_tiocmget(struct tty_struct *tty, struct file *file)
+static int gs_tiocmget(struct tty_struct *tty)
 {
 	struct gs_port	*port = tty->driver_data;
 	struct gserial	*gser;
@@ -1121,7 +1122,7 @@ fail:
 	return result;
 }
 
-static int gs_tiocmset(struct tty_struct *tty, struct file *file,
+static int gs_tiocmset(struct tty_struct *tty,
 	unsigned int set, unsigned int clear)
 {
 	struct gs_port	*port = tty->driver_data;
@@ -1181,7 +1182,7 @@ static const struct tty_operations gs_tty_ops = {
 
 static struct tty_driver *gs_tty_driver;
 
-static int __init
+static int
 gs_port_alloc(unsigned port_num, struct usb_cdc_line_coding *coding)
 {
 	struct gs_port	*port;
@@ -1285,19 +1286,19 @@ static ssize_t debug_write_reset(struct file *file, const char __user *buf,
 	return count;
 }
 
-static int debug_open(struct inode *inode, struct file *file)
+static int serial_debug_open(struct inode *inode, struct file *file)
 {
 	file->private_data = inode->i_private;
 	return 0;
 }
 
 const struct file_operations debug_rst_ops = {
-	.open = debug_open,
+	.open = serial_debug_open,
 	.write = debug_write_reset,
 };
 
 const struct file_operations debug_adb_ops = {
-	.open = debug_open,
+	.open = serial_debug_open,
 	.read = debug_read_status,
 };
 
@@ -1337,7 +1338,7 @@ static void usb_debugfs_init(struct gs_port *ui_dev) {}
  *
  * Returns negative errno or zero.
  */
-int __init gserial_setup(struct usb_gadget *g, unsigned count)
+int gserial_setup(struct usb_gadget *g, unsigned count)
 {
 	unsigned			i;
 	struct usb_cdc_line_coding	coding;
@@ -1423,7 +1424,8 @@ int __init gserial_setup(struct usb_gadget *g, unsigned count)
 fail:
 	while (count--)
 		kfree(ports[count].port);
-	destroy_workqueue(gserial_wq);
+	if (gserial_wq)
+		destroy_workqueue(gserial_wq);
 	put_tty_driver(gs_tty_driver);
 	gs_tty_driver = NULL;
 	return status;

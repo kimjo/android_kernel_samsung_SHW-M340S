@@ -25,6 +25,21 @@
 #define RX        (0)  /* similar to USB_DIR_OUT but can be used as an index */
 #define TX        (1)  /* similar to USB_DIR_IN  but can be used as an index */
 
+/* UDC private data:
+ *  16MSb - Vendor ID | 16 LSb Vendor private data
+ */
+#define CI13XX_REQ_VENDOR_ID(id)  (id & 0xFFFF0000UL)
+
+/* MSM specific */
+#define MSM_PIPE_ID_MASK         (0x1F)
+#define MSM_TX_PIPE_ID_OFS       (16)
+#define MSM_SPS_MODE             BIT(5)
+#define MSM_TBE                  BIT(6)
+#define MSM_ETD_TYPE             BIT(1)
+#define MSM_ETD_IOC              BIT(9)
+#define MSM_VENDOR_ID            BIT(16)
+#define MSM_EP_PIPE_ID_RESET_VAL 0x1F001F
+
 /******************************************************************************
  * STRUCTURES
  *****************************************************************************/
@@ -98,6 +113,7 @@ struct ci13xxx_ep {
 	spinlock_t                            *lock;
 	struct device                         *device;
 	struct dma_pool                       *td_pool;
+	unsigned long dTD_update_fail_count;
 };
 
 struct ci13xxx;
@@ -111,7 +127,6 @@ struct ci13xxx_udc_driver {
 #define CI13XXX_ZERO_ITC		BIT(4)
 
 #define CI13XXX_CONTROLLER_RESET_EVENT		0
-#define CI13XXX_CONTROLLER_STOPPED_EVENT	1
 	void	(*notify_event) (struct ci13xxx *udc, unsigned event);
 };
 
@@ -140,6 +155,7 @@ struct ci13xxx {
 	int                        vbus_active; /* is VBUS active */
 	int                        softconnect; /* is pull-up enable allowed */
 	struct otg_transceiver    *transceiver; /* Transceiver struct */
+	unsigned long dTD_update_fail_count;
 };
 
 /******************************************************************************
