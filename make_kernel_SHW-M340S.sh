@@ -1,2 +1,2 @@
-make vasto_kor_skt_defconfig
-make
+make say_defconfig
+make -j8
