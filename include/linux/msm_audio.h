@@ -1,7 +1,6 @@
 /* include/linux/msm_audio.h
  *
  * Copyright (C) 2008 Google, Inc.
- * Copyright (c) 2009-2010, Code Aurora Forum. All rights reserved.
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -91,6 +90,9 @@
 #define AUDIO_GET_ACDB_BLK _IOW(AUDIO_IOCTL_MAGIC, 96,  \
 					struct msm_acdb_cmd_device)
 
+#define AUDIO_REGISTER_ION _IOW(AUDIO_IOCTL_MAGIC, 97, unsigned)
+#define AUDIO_DEREGISTER_ION _IOW(AUDIO_IOCTL_MAGIC, 98, unsigned)
+
 #define	AUDIO_MAX_COMMON_IOCTL_NUM	100
 
 
@@ -167,6 +169,11 @@ struct msm_audio_stats {
 	uint32_t unused[2];
 };
 
+struct msm_audio_ion_info {
+	int fd;
+	void *vaddr;
+};
+
 struct msm_audio_pmem_info {
 	int fd;
 	void *vaddr;
@@ -210,8 +217,6 @@ struct msm_snd_device_config {
 #define SND_SET_DEVICE _IOW(SND_IOCTL_MAGIC, 2, struct msm_device_config *)
 
 #define SND_METHOD_VOICE 0
-#define SND_METHOD_MIDI 4 //kks_110819_1 kks_110819
-#define SND_METHOD_KEY_BEEP 1 //kks_120106
 
 struct msm_snd_volume_config {
 	uint32_t device;
