@@ -1,0 +1,3 @@
+post-build=samsung/cm_trebon/trebon:4.1.2/JZO54K/eng.thewhisp.20130506.182327:userdebug/test-keys
+post-timestamp=1367853839
+pre-device=trebon
