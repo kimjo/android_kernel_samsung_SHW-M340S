@@ -16,6 +16,9 @@ config MT9T013
 	default n
 	---help---
 	  MICRON 3M Bayer Sensor with AutoFocus
+config MT9V113
+	bool "Sensor mt9v113 (YUV 1.3M)"
+	default n	  
 config MT9D113
 	bool "Sensor mt9d113 (YUV 2M)"
 	depends on MSM_CAMERA && ARCH_MSM8X60 && !MSM_CAMERA_V4L2
@@ -37,6 +40,7 @@ config IMX074
 	default n
 	---help---
 	SONY 13.5 MP Bayer Sensor
+
 config WEBCAM_OV7692
 	bool "Sensor OV7692 (VGA YUV)"
 	depends on MSM_CAMERA && ARCH_MSM8X60 && !MSM_CAMERA_V4L2
@@ -69,20 +73,6 @@ config MT9P012
 	default n
 	---help---
 	  MICRON 5M Bayer Sensor with Autofocus
-
-config S5K5CCAF
-	bool "Sensor S5K5CCAF"
-	depends on MSM_CAMERA && !ARCH_MSM8X60 && !MSM_CAMERA_V4L2
-	default n
-	---help---
-	  LSI 3M Sensor with Autofocus
-
-config MT9V113
-	bool "Sensor mt9v113"
-	depends on MSM_CAMERA && !ARCH_MSM8X60 && !MSM_CAMERA_V4L2
-	default n
-	---help---
-	  MICRON VGA Sensor
 
 choice
 	prompt "AF module"
@@ -148,6 +138,14 @@ config MSM_CAMERA_FLASH_SC628A
 	  It is a samtech charge pump flash driver and it
 	  supports spotlight and flash light modes with
 	  differrent current levels.
+	  
+config S5K5CCAF
+	bool "Sensor s5k5ccaf (3M)"
+	depends on MSM_CAMERA && !ARCH_MSM8X60 && !MSM_CAMERA_V4L2
+	default y
+	---help---
+	  LSI 3M Sensor with Autofocus
+	  
 config SR300PC20
 	bool "Sensor sr300pc20 (3M)"
 	depends on MSM_CAMERA && !ARCH_MSM8X60 && !MSM_CAMERA_V4L2
@@ -187,11 +185,6 @@ config MSM_CAMERA_FLASH
 	default y
 	---help---
 	  Enable support for LED flash for msm camera
-
-config MSM_CAMERA_SENSOR
-	bool "Qualcomm MSM camera sensor support"
-	depends on MSM_CAMERA
-	default y
 
 config MSM_GEMINI
 	tristate "Qualcomm MSM Gemini Jpeg Engine support"
